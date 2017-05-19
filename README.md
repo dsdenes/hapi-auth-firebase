@@ -30,7 +30,7 @@ server.register(hapiAuthFirebase, (err) => {
 ```
 Client
 ------
-```
+```javascript
 import * as firebase from 'firebase';
 import axios from 'axios';
 
