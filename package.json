@@ -7,7 +7,10 @@
     "test": "jest lib/",
     "pretest": "yarn build",
     "build": "babel src -d lib",
-    "prepublish": "yarn build"
+    "prepublish": "yarn build",
+    "release-patch": "npm version patch && npm publish",
+    "release-minor": "npm version minor && npm publish",
+    "release-major": "npm version major && npm publish"
   },
   "repository": {},
   "license": "MIT",
