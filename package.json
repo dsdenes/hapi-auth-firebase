@@ -1,0 +1,24 @@
+{
+  "name": "hapi-auth-firebase",
+  "version": "1.0.0",
+  "author": "Denes Pal <dsdenes@gmail.com>",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest lib/",
+    "pretest": "yarn build",
+    "build": "babel src -d lib",
+    "prepublish": "yarn build"
+  },
+  "repository": {},
+  "license": "MIT",
+  "dependencies": {
+    "boom": "^4.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.46.0",
+    "jest": "^20.0.3"
+  }
+}
