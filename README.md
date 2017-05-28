@@ -22,9 +22,21 @@ server.register(hapiAuthFirebase, (err) => {
         throw err;
     }
     
-    server.auth.strategy('firebase', 'token', { 
+    server.auth.strategy('firebase', 'firebase', { 
         firebaseAdmin 
     });
+    
+    server.route({
+        path: '/session',
+        config: {
+            auth: 'firebase',
+        },
+        handler: function (request, reply) {
+            const name = request.auth.credentials.name;
+            reply('hello ' + name);
+        }
+    });
+
 });
 
 ```
