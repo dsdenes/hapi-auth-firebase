@@ -1,26 +1,16 @@
 import {
-  register,
-  raiseError,
-  applyErrorFunc,
-  firebaseAuthScheme,
-  authenticateRequest,
-  unauthorizedError,
-  verifyToken,
-  extractTokenFromRequest,
-  getCredentialFromAuthHeader
+  plugin
 } from './index';
 
 describe('hapi-auth-firebase', () => {
   it('should register auth scheme', async () => {
-    // register(server, options, next)
+    // plugin.register(server, options)
     const server = {
       auth: {
         scheme: jest.fn()
       }
     };
-    const next = jest.fn();
-    await register(server, {}, next);
+    await plugin.register(server, {});
     expect(server.auth.scheme).toHaveBeenCalled();
-    expect(next).toHaveBeenCalled();
   });
 });

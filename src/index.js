@@ -1,21 +1,16 @@
-//@flow
+'use strict';
+
+const { version } = require('../package.json');
 const Boom = require('boom');
 
-module.exports = {
-  register,
-  raiseError,
-  applyErrorFunc,
-  firebaseAuthScheme,
-  authenticateRequest,
-  unauthorizedError,
-  verifyToken,
-  extractTokenFromRequest,
-  getCredentialFromAuthHeader
-};
-
-function register(server, options, next) {
-  server.auth.scheme('firebase', firebaseAuthScheme);
-  return next();
+exports.plugin = {
+  name: 'hapiAuthFirebase',
+  once: true,
+  pkg: require('../package.json'),
+  register: async (server, options) => {
+    return await server.auth.scheme('firebase', firebaseAuthScheme);
+  },
+  version: version,
 }
 
 async function raiseError(errorFunc, errorContext) {
@@ -37,41 +32,35 @@ function firebaseAuthScheme(server, options) {
 }
 
 function authenticateRequest(server, options) {
-  return async (request, reply) => {
-
+  return async (request, hapi) => {
     const token = extractTokenFromRequest(request);
 
     if (!token) {
-      return reply(unauthorizedError(options.errorFunc));
+      return hapi.unauthenticated(unauthorizedError(options.errorFunc));
     }
 
     request.auth.token = token;
 
     try {
       const credentials = await verifyToken(options.firebaseAdmin, token);
-      reply.continue({
-        credentials,
-        artifacts: token
-      });
+      return hapi.authenticated({ credentials: credentials, artifacts: token });
     } catch (error) {
-      return reply(unauthorizedError(options.errorFunc, {
+      return hapi.unauthenticated(unauthorizedError(options.errorFunc, {
         message: error.message || error
       }));
     }
-  }
+  };
 }
 
-function unauthorizedError(errorFunc, errorParams={}) {
+function unauthorizedError(errorFunc, errorParams = {}) {
   return raiseError(errorFunc, Object.assign({}, errorParams, {
     errorType: 'unauthorized',
     scheme: 'firebase'
   }));
 }
 
-function verifyToken(firebaseAdmin, token: String) {
-  return firebaseAdmin
-    .auth()
-    .verifyIdToken(token);
+function verifyToken(firebaseAdmin, token) {
+  return firebaseAdmin.auth().verifyIdToken(token);
 }
 
 function extractTokenFromRequest(request) {
@@ -81,8 +70,3 @@ function extractTokenFromRequest(request) {
 function getCredentialFromAuthHeader(scheme, header) {
   return (header.match(new RegExp(`${scheme} (.*)`)) || [])[1];
 }
-
-register.attributes = {
-  pkg: require('../package.json')
-};
-
